@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:gain_solutions_task/features/contacts/bloc/contacts_bloc.dart';
+import 'package:gain_solutions_task/features/contacts/bloc/contacts_bloc.dart';
 
 import '../../../app_config/app_assets_path.dart';
 
@@ -12,6 +15,12 @@ class ContactsScreen extends StatefulWidget {
 
 class _ContactsScreenState extends State<ContactsScreen> {
   final _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    context.read<ContactsBloc>().add(FetchContacts());
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -104,11 +113,37 @@ class _ContactsScreenState extends State<ContactsScreen> {
             ),
             const SizedBox(height: 16),
             Expanded(
-              child: ListView.builder(
-                itemCount: 10,
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  return _ContactWidget();
+              child: BlocBuilder<ContactsBloc, ContactsState>(
+                builder: (context, state) {
+                  if (state is ContactsLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (state is ContactsLoaded) {
+                    return ListView.builder(
+                      itemCount: 10,
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        return _ContactWidget();
+                      },
+                    );
+                  } else if (state is ContactsError) {
+                    return Center(
+                      child: Text(
+                        'Error: ${state.message}',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.error,
+                        ),
+                      ),
+                    );
+                  } else {
+                    return Center(
+                      child: Text(
+                        'Error',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.error,
+                        ),
+                      ),
+                    );
+                  }
                 },
               ),
             ),
