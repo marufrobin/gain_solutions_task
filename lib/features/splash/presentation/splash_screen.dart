@@ -20,6 +20,21 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: Text('Splash Screen')));
+    final theme = Theme.of(context);
+    return Scaffold(
+      backgroundColor: theme.colorScheme.primary,
+      body: Center(
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          child: Text(
+            'Gain Solutions Task Demo',
+            style: theme.textTheme.headlineLarge?.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
