@@ -34,16 +34,23 @@ class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
     emit(ContactsLoading());
     try {
       final contacts = await repository.getContacts();
+      List<ContactsModel> filteredContacts;
+
       if (event.query != null && event.query!.isNotEmpty) {
         final query = event.query!.toLowerCase();
-        contacts.retainWhere(
-          (contact) =>
-              contact.name.toLowerCase().contains(query) ||
-              contact.firstName.toLowerCase().contains(query) ||
-              contact.lastName.toLowerCase().contains(query),
-        );
+
+        filteredContacts = contacts
+            .where(
+              (contact) =>
+                  contact.name.toLowerCase().contains(query) ||
+                  contact.firstName.toLowerCase().contains(query) ||
+                  contact.lastName.toLowerCase().contains(query),
+            )
+            .toList();
+      } else {
+        filteredContacts = List.from(contacts);
       }
-      emit(ContactsLoaded(contacts: contacts));
+      emit(ContactsLoaded(contacts: filteredContacts));
     } catch (e) {
       emit(ContactsError(message: e.toString()));
     }

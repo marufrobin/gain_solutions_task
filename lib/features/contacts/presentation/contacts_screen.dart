@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -73,6 +75,10 @@ class _ContactsScreenState extends State<ContactsScreen> {
             TextField(
               controller: _searchController,
               onChanged: (value) {
+                log(name: "value", value.isEmpty.toString());
+                if (value.isEmpty) {
+                  context.read<ContactsBloc>().add(FetchContacts());
+                }
                 context.read<ContactsBloc>().add(SearchContacts(query: value));
               },
               onSubmitted: (value) {
