@@ -23,7 +23,10 @@ class _TicketsScreenState extends State<TicketsScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<TicketsBloc>().add(FetchTickets());
+    final currentState = context.read<TicketsBloc>().state;
+    if (currentState is! TicketsLoaded) {
+      context.read<TicketsBloc>().add(FetchTickets());
+    }
   }
 
   @override

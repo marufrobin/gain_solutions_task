@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -199,6 +201,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ],
               ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: TextButton.icon(
+            onPressed: () {
+              log("clicked");
+            },
+            style: TextButton.styleFrom(
+              backgroundColor: Colors.red.shade100,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              minimumSize: const Size(double.infinity, 48),
+              shape: StadiumBorder(),
+            ),
+            icon: const Icon(Icons.logout, color: Colors.red, size: 20),
+            label: const Text(
+              'Log out',
+              style: TextStyle(color: Colors.red, fontSize: 16),
             ),
           ),
         ),

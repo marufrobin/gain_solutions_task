@@ -1,11 +1,13 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app_config/app_assets_path.dart';
 import '../../../models/ticket_model.dart';
+import '../bloc/tickets_bloc.dart';
 
 class FilterScreen extends StatefulWidget {
   const FilterScreen({super.key});
@@ -20,12 +22,65 @@ class _FilterScreenState extends State<FilterScreen> {
 
   final _searchController = TextEditingController();
 
-  final List<String> _tags = ['tag one', 'tag two', 'tag three'];
+  final List<String> _tags = [
+    'tag one',
+    'tag two',
+    'tag three',
+    'tag four',
+    'tag five',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCurrentFilters();
+  }
+
+  void _loadCurrentFilters() {
+    final currentState = context.read<TicketsBloc>().state;
+    if (currentState is TicketsLoaded && currentState.activeFilters != null) {
+      final filters = currentState.activeFilters!;
+      setState(() {
+        _selectedBrand = filters.brand;
+        _selectedPriority = filters.priority;
+        _searchController.text = filters.tags ?? '';
+      });
+    }
+  }
 
   @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  void _applyFilters() {
+    context.read<TicketsBloc>().add(
+      FilterTickets(
+        brand: _selectedBrand,
+        priority: _selectedPriority,
+        tags: _searchController.text.trim().isNotEmpty
+            ? _searchController.text.trim()
+            : null,
+      ),
+    );
+    context.pop();
+  }
+
+  void _clearFilters() {
+    setState(() {
+      _selectedBrand = null;
+      _selectedPriority = null;
+      _searchController.clear();
+    });
+    context.read<TicketsBloc>().add(ClearFilters());
+    context.pop();
+  }
+
+  bool get _hasActiveFilters {
+    return _selectedBrand != null ||
+        _selectedPriority != null ||
+        _searchController.text.trim().isNotEmpty;
   }
 
   @override
@@ -39,18 +94,16 @@ class _FilterScreenState extends State<FilterScreen> {
         ),
         centerTitle: false,
         elevation: 0,
-        title: Text('Filters'),
+        title: const Text('Filters'),
         actions: [
           TextButton(
-            onPressed: _selectedBrand == null && _selectedPriority == null
-                ? null
-                : () {},
+            onPressed: _applyFilters,
             child: Text(
               'Apply',
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: _selectedBrand == null && _selectedPriority == null
-                    ? theme.colorScheme.onSurface.withValues(alpha: 0.4)
-                    : theme.colorScheme.onSurface,
+                color: _hasActiveFilters
+                    ? theme.colorScheme.onSurface
+                    : theme.colorScheme.onSurface.withValues(alpha: 0.1),
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
               ),
@@ -96,17 +149,14 @@ class _FilterScreenState extends State<FilterScreen> {
             const SizedBox(height: 16),
             TextField(
               controller: _searchController,
-              onChanged: (value) {
-                log(name: "value", value.isEmpty.toString());
-              },
-              onSubmitted: (value) {},
+              onChanged: (value) {},
               decoration: InputDecoration(
-                hintText: 'Search Contacts',
+                hintText: 'Search Tags',
                 hintStyle: theme.textTheme.bodyMedium?.copyWith(
                   fontSize: 16,
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
-                prefixIconConstraints: BoxConstraints(
+                prefixIconConstraints: const BoxConstraints(
                   minHeight: 30,
                   minWidth: 30,
                 ),
@@ -120,7 +170,17 @@ class _FilterScreenState extends State<FilterScreen> {
                     ),
                   ),
                 ),
-                fillColor: Color(0xffF3F4F8),
+                suffixIcon: _searchController.text.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          setState(() {
+                            _searchController.clear();
+                          });
+                        },
+                      )
+                    : null,
+                fillColor: const Color(0xffF3F4F8),
                 filled: true,
                 border: OutlineInputBorder(
                   borderSide: BorderSide.none,
@@ -141,7 +201,6 @@ class _FilterScreenState extends State<FilterScreen> {
                       theme: theme,
                       title: e,
                       onChanged: (value) {
-                        log(name: "value", value.toString());
                         if (value != null && value.isNotEmpty) {
                           setState(() {
                             _searchController.text = value;
@@ -163,12 +222,19 @@ class _FilterScreenState extends State<FilterScreen> {
     required String title,
     required Function(String?) onChanged,
   }) {
+    final isSelected =
+        _searchController.text.toLowerCase() == title.toLowerCase();
+
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
+        color: isSelected
+            ? theme.colorScheme.primary.withValues(alpha: 0.1)
+            : theme.colorScheme.surface,
         border: Border.all(
-          color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
+          color: isSelected
+              ? theme.colorScheme.primary
+              : theme.colorScheme.onSurface.withValues(alpha: 0.1),
         ),
         borderRadius: BorderRadius.circular(8),
       ),
@@ -180,7 +246,15 @@ class _FilterScreenState extends State<FilterScreen> {
           },
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Text(title),
+            child: Text(
+              title,
+              style: TextStyle(
+                color: isSelected
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.onSurface,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+              ),
+            ),
           ),
         ),
       ),
@@ -199,8 +273,8 @@ class _FilterScreenState extends State<FilterScreen> {
         borderRadius: BorderRadius.circular(8),
       ),
       child: DropdownButton(
-        underline: SizedBox(),
-        icon: Icon(Icons.keyboard_arrow_down_rounded),
+        underline: const SizedBox(),
+        icon: const Icon(Icons.keyboard_arrow_down_rounded),
         items: TicketPriority.values.map((e) {
           return DropdownMenuItem(
             value: e,
@@ -238,26 +312,27 @@ class _FilterScreenState extends State<FilterScreen> {
   ListView _brandCheckList(ThemeData theme) {
     return ListView.builder(
       shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: TicketBrand.values.length,
       itemBuilder: (context, index) {
-        final isSelected =
-            _selectedBrand == TicketBrand.values.elementAt(index);
-        void onChanged() {
-          setState(() {
-            _selectedBrand = TicketBrand.values.elementAt(index);
-          });
-        }
+        final brand = TicketBrand.values.elementAt(index);
+        final isSelected = _selectedBrand == brand;
 
         return InkWell(
-          onTap: onChanged,
+          onTap: () {
+            setState(() {
+              // Toggle selection: if already selected, unselect it
+              _selectedBrand = isSelected ? null : brand;
+            });
+          },
           child: _brandWidget(
             theme: theme,
-            title: TicketBrand.values.elementAt(index).name,
+            title: brand.name,
             isSelected: isSelected,
             onChanged: (value) {
-              log(name: "value", value.toString());
-
-              if (value != null && value) onChanged();
+              setState(() {
+                _selectedBrand = value == true ? brand : null;
+              });
             },
           ),
         );

@@ -8,3 +8,16 @@ abstract class TicketsEvent extends Equatable {
 }
 
 final class FetchTickets extends TicketsEvent {}
+
+final class FilterTickets extends TicketsEvent {
+  final TicketBrand? brand;
+  final TicketPriority? priority;
+  final String? tags;
+
+  const FilterTickets({this.brand, this.priority, this.tags});
+
+  @override
+  List<Object?> get props => [brand, priority, tags];
+}
+
+final class ClearFilters extends TicketsEvent {}
