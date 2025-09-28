@@ -8,4 +8,5 @@ class AppAssetsPath {
   static const String logo = 'assets/icons/logo.c476c33d 1.svg';
   static const String filter = 'assets/icons/filter.svg';
   static const String edit = 'assets/icons/edit.svg';
+  static const String search = 'assets/icons/search.svg';
 }
