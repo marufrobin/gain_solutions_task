@@ -13,6 +13,26 @@ class ProfileDataProvider {
       address: '123 Main Street, Anytown, USA',
       createdAt: DateTime(2023, 12, 23, 15, 45),
       updatedAt: DateTime.now(),
+      assignedRoles: [
+        AssignedRoleModel(
+          id: 1,
+          roleName: 'Developer',
+          groupName: 'Development Team',
+          groupManagerName: 'John Doe',
+        ),
+        AssignedRoleModel(
+          id: 2,
+          roleName: 'Designer',
+          groupName: 'Design Team',
+          groupManagerName: 'Jane Doe',
+        ),
+        AssignedRoleModel(
+          id: 3,
+          roleName: 'QA',
+          groupName: 'QA Team',
+          groupManagerName: 'Bob Smith',
+        ),
+      ],
     );
   }
 }

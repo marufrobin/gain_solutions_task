@@ -44,8 +44,22 @@ class _TicketsScreenState extends State<TicketsScreen> {
             fontSize: 28,
           ),
         ),
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: Stack(
+              children: [
+                Icon(Icons.notifications_none_outlined, size: 30),
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: Badge(label: Text('3'), backgroundColor: Colors.red),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
-
       body: BlocBuilder<TicketsBloc, TicketsState>(
         builder: (context, state) {
           if (state is TicketsLoaded) {

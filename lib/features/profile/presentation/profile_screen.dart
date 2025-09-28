@@ -69,6 +69,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
         const SizedBox(height: 16),
         profileCardWidget(state, theme),
@@ -100,11 +101,105 @@ class _ProfileScreenState extends State<ProfileScreen> {
           title: 'Address',
           value: state.profile?.address ?? '',
         ),
-        const SizedBox(height: 8),
-        Text(
-          'Address: ${state.profile?.address}',
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+        const SizedBox(height: 16),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Text(
+            'Assigned roles(${state.profile?.assignedRoles.length})',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontSize: 12,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+            ),
+          ),
+        ),
+        Container(
+          height: 240,
+          child: ListView.builder(
+            itemCount: state.profile?.assignedRoles.length ?? 0,
+            shrinkWrap: true,
+            scrollDirection: Axis.horizontal,
+            itemBuilder: (context, index) => Container(
+              // height: 48,
+              width: 280,
+              margin: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    state.profile?.assignedRoles[index].roleName ?? '',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontSize: 22,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                  ),
+                  Divider(
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
+                    thickness: 2,
+                  ),
+                  Text(
+                    "Group",
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontSize: 12,
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    state.profile?.assignedRoles[index].groupName ?? '',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      fontSize: 14,
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.9),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    "Manager",
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontSize: 12,
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    spacing: 8,
+                    children: [
+                      Container(
+                        width: 30,
+                        height: 30,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade300,
+                          shape: BoxShape.circle,
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(100),
+                          child: Image.network(
+                            "https://avatars.githubusercontent.com/u/47666475?v=4",
+                          ),
+                        ),
+                      ),
+                      Text(
+                        state.profile?.assignedRoles[index].groupManagerName ??
+                            '',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          fontSize: 14,
+                          color: theme.colorScheme.onSurface.withValues(
+                            alpha: 0.9,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ],
