@@ -121,6 +121,21 @@ class _TicketsScreenState extends State<TicketsScreen> {
             color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
           ),
         ),
+        const Spacer(),
+        if (state.hasActiveFilters)
+          InkWell(
+            onTap: () {
+              context.read<TicketsBloc>().add(ClearFilters());
+            },
+            child: Text(
+              "Clear Filters",
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurface,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        SizedBox(width: 16),
         InkWell(
           onTap: () {
             context.pushNamed(AppRoutesNames.filter);

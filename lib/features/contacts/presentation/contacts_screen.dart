@@ -197,7 +197,7 @@ class _ContactWidget extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         spacing: 8,
         children: [
-          _userInfo(theme: theme, contact: contact),
+          _userInfo(theme: theme, contact: contact, context: context),
           const SizedBox(height: 4),
           Row(
             spacing: 6,
@@ -255,7 +255,11 @@ class _ContactWidget extends StatelessWidget {
     );
   }
 
-  Row _userInfo({required ThemeData theme, required ContactsModel? contact}) {
+  Row _userInfo({
+    required ThemeData theme,
+    required ContactsModel? contact,
+    required BuildContext context,
+  }) {
     return Row(
       spacing: 16,
       children: [
@@ -288,7 +292,17 @@ class _ContactWidget extends StatelessWidget {
           ),
         ),
         const Spacer(),
-        IconButton(onPressed: () {}, icon: Icon(Icons.more_vert_rounded)),
+        PopupMenuButton<String>(
+          icon: const Icon(Icons.more_vert_rounded),
+          onSelected: (value) {
+            log(name: "value", value.isEmpty.toString());
+          },
+          itemBuilder: (context) => [
+            const PopupMenuItem(value: 'edit', child: Text('Edit')),
+            const PopupMenuItem(value: 'view', child: Text('View tickets')),
+            const PopupMenuItem(value: 'delete', child: Text('Delete')),
+          ],
+        ),
       ],
     );
   }
