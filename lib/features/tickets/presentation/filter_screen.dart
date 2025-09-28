@@ -16,6 +16,7 @@ class FilterScreen extends StatefulWidget {
 
 class _FilterScreenState extends State<FilterScreen> {
   TicketBrand? _selectedBrand;
+  TicketPriority? _selectedPriority;
 
   @override
   Widget build(BuildContext context) {
@@ -64,11 +65,56 @@ class _FilterScreenState extends State<FilterScreen> {
             _brandCheckList(theme),
             const SizedBox(height: 16),
             Text(
-              'Status',
+              'Priority',
               style: theme.textTheme.titleLarge?.copyWith(
                 color: theme.colorScheme.onSurface,
                 fontSize: 24,
                 fontWeight: FontWeight.w600,
+              ),
+            ),
+            Container(
+              margin: const EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface,
+                border: Border.all(
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
+                ),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: DropdownButton(
+                underline: SizedBox(),
+                icon: Icon(Icons.keyboard_arrow_down_rounded),
+                items: TicketPriority.values.map((e) {
+                  return DropdownMenuItem(
+                    value: e,
+                    child: Text(
+                      e.name,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurface,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  );
+                }).toList(),
+                borderRadius: BorderRadius.circular(8),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                isExpanded: true,
+                value: _selectedPriority,
+                hint: Text(
+                  'Select Priority',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                onChanged: (TicketPriority? value) {
+                  setState(() {
+                    _selectedPriority = value;
+                  });
+                },
               ),
             ),
           ],
