@@ -5,6 +5,7 @@ import 'package:gain_solutions_task/features/contacts/bloc/contacts_bloc.dart';
 import 'package:gain_solutions_task/features/contacts/bloc/contacts_bloc.dart';
 
 import '../../../app_config/app_assets_path.dart';
+import '../../../models/contacts_model.dart';
 
 class ContactsScreen extends StatefulWidget {
   const ContactsScreen({super.key});
@@ -71,6 +72,12 @@ class _ContactsScreenState extends State<ContactsScreen> {
           children: [
             TextField(
               controller: _searchController,
+              onChanged: (value) {
+                context.read<ContactsBloc>().add(SearchContacts(query: value));
+              },
+              onSubmitted: (value) {
+                context.read<ContactsBloc>().add(SearchContacts(query: value));
+              },
               decoration: InputDecoration(
                 hintText: 'Search Contacts',
                 hintStyle: theme.textTheme.bodyMedium?.copyWith(
@@ -125,10 +132,12 @@ class _ContactsScreenState extends State<ContactsScreen> {
                     return const Center(child: CircularProgressIndicator());
                   } else if (state is ContactsLoaded) {
                     return ListView.builder(
-                      itemCount: 10,
+                      itemCount: state.contacts.length,
                       shrinkWrap: true,
                       itemBuilder: (context, index) {
-                        return _ContactWidget();
+                        return _ContactWidget(
+                          contact: state.contacts.elementAt(index),
+                        );
                       },
                     );
                   } else if (state is ContactsError) {
@@ -161,7 +170,9 @@ class _ContactsScreenState extends State<ContactsScreen> {
 }
 
 class _ContactWidget extends StatelessWidget {
-  const _ContactWidget({super.key});
+  final ContactsModel? contact;
+
+  const _ContactWidget({this.contact});
 
   @override
   Widget build(BuildContext context) {
@@ -180,7 +191,7 @@ class _ContactWidget extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         spacing: 8,
         children: [
-          _userInfo(theme),
+          _userInfo(theme: theme, contact: contact),
           const SizedBox(height: 4),
           Row(
             spacing: 6,
@@ -191,7 +202,7 @@ class _ContactWidget extends StatelessWidget {
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
               Text(
-                "marufrobin00@gmail.com",
+                contact?.email ?? '',
                 style: theme.textTheme.bodySmall?.copyWith(
                   fontSize: 14,
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
@@ -208,7 +219,7 @@ class _ContactWidget extends StatelessWidget {
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
               Text(
-                "+628123456789",
+                contact?.phone ?? '',
                 style: theme.textTheme.bodySmall?.copyWith(
                   fontSize: 14,
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
@@ -225,7 +236,7 @@ class _ContactWidget extends StatelessWidget {
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
               Text(
-                "123 Main Street, Anytown, USA",
+                contact?.address ?? '',
                 style: theme.textTheme.bodySmall?.copyWith(
                   fontSize: 14,
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
@@ -238,7 +249,7 @@ class _ContactWidget extends StatelessWidget {
     );
   }
 
-  Row _userInfo(ThemeData theme) {
+  Row _userInfo({required ThemeData theme, required ContactsModel? contact}) {
     return Row(
       spacing: 16,
       children: [
@@ -258,12 +269,13 @@ class _ContactWidget extends StatelessWidget {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(100),
             child: Image.network(
-              "https://avatars.githubusercontent.com/u/47666475?v=4",
+              contact?.personImageUrl ?? "",
+              fit: BoxFit.cover,
             ),
           ),
         ),
         Text(
-          "Maruf Robin",
+          contact?.name ?? '',
           style: theme.textTheme.bodyMedium?.copyWith(
             fontSize: 16,
             color: theme.colorScheme.onSurface,

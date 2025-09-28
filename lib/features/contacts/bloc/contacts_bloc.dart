@@ -12,6 +12,7 @@ class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
 
   ContactsBloc({required this.repository}) : super(ContactsInitial()) {
     on<FetchContacts>(_onFetchContacts);
+    on<SearchContacts>(_onSearchContacts);
   }
   Future<void> _onFetchContacts(
     FetchContacts event,
@@ -20,6 +21,28 @@ class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
     emit(ContactsLoading());
     try {
       final contacts = await repository.getContacts();
+      emit(ContactsLoaded(contacts: contacts));
+    } catch (e) {
+      emit(ContactsError(message: e.toString()));
+    }
+  }
+
+  void _onSearchContacts(
+    SearchContacts event,
+    Emitter<ContactsState> emit,
+  ) async {
+    emit(ContactsLoading());
+    try {
+      final contacts = await repository.getContacts();
+      if (event.query != null && event.query!.isNotEmpty) {
+        final query = event.query!.toLowerCase();
+        contacts.retainWhere(
+          (contact) =>
+              contact.name.toLowerCase().contains(query) ||
+              contact.firstName.toLowerCase().contains(query) ||
+              contact.lastName.toLowerCase().contains(query),
+        );
+      }
       emit(ContactsLoaded(contacts: contacts));
     } catch (e) {
       emit(ContactsError(message: e.toString()));

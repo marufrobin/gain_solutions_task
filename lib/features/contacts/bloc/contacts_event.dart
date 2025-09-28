@@ -9,11 +9,8 @@ abstract class ContactsEvent extends Equatable {
 
 final class FetchContacts extends ContactsEvent {}
 
-final class UpdateContacts extends ContactsEvent {
-  final ContactsModel? contact;
+final class SearchContacts extends ContactsEvent {
+  final String? query;
 
-  const UpdateContacts({required this.contact});
-
-  @override
-  List<Object?> get props => [contact];
+  const SearchContacts({required this.query});
 }
