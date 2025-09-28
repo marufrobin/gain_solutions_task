@@ -6,12 +6,15 @@ import 'package:gain_solutions_task/features/splash/presentation/splash_screen.d
 import 'package:gain_solutions_task/features/tickets/presentation/tickets_screen.dart';
 import 'package:go_router/go_router.dart';
 
+import '../features/tickets/presentation/filter_screen.dart';
+
 class AppRoutesNames {
   static const String splashScreen = '/';
   static const String dashboard = '/dashboard';
   static const String tickets = '/tickets';
   static const String contacts = '/contacts';
   static const String profile = '/profile';
+  static const String filter = '/filter';
 }
 
 GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -45,6 +48,11 @@ class AppRoutes {
         name: AppRoutesNames.profile,
         path: AppRoutesNames.profile,
         builder: (context, state) => const ProfileScreen(),
+      ),
+      GoRoute(
+        name: AppRoutesNames.filter,
+        path: AppRoutesNames.filter,
+        builder: (context, state) => const FilterScreen(),
       ),
     ],
   );
