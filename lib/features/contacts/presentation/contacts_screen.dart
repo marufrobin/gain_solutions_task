@@ -104,12 +104,18 @@ class _ContactsScreenState extends State<ContactsScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            Text(
-              '42 Contacts',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontSize: 14,
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-              ),
+            BlocBuilder<ContactsBloc, ContactsState>(
+              builder: (context, state) {
+                return Text(
+                  state is ContactsLoaded
+                      ? '${state.contacts.length} Contacts'
+                      : '0 Contacts',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontSize: 14,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                  ),
+                );
+              },
             ),
             const SizedBox(height: 16),
             Expanded(
