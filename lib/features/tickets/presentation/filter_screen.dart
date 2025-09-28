@@ -1,11 +1,21 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app_config/app_assets_path.dart';
+import '../../../models/ticket_model.dart';
 
-class FilterScreen extends StatelessWidget {
+class FilterScreen extends StatefulWidget {
   const FilterScreen({super.key});
+
+  @override
+  State<FilterScreen> createState() => _FilterScreenState();
+}
+
+class _FilterScreenState extends State<FilterScreen> {
+  TicketBrand? _selectedBrand;
 
   @override
   Widget build(BuildContext context) {
@@ -51,25 +61,74 @@ class FilterScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            ListTile(
-              title: Row(
-                children: [
-                  Image.asset(AppAssetsPath.logoPNG, width: 24, height: 24),
-                  Text(
-                    'Gains',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurface,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
+            _brandCheckList(theme),
+            const SizedBox(height: 16),
+            Text(
+              'Status',
+              style: theme.textTheme.titleLarge?.copyWith(
+                color: theme.colorScheme.onSurface,
+                fontSize: 24,
+                fontWeight: FontWeight.w600,
               ),
-              leading: Checkbox(value: true, onChanged: (value) {}),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  ListView _brandCheckList(ThemeData theme) {
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: TicketBrand.values.length,
+      itemBuilder: (context, index) {
+        final isSelected =
+            _selectedBrand == TicketBrand.values.elementAt(index);
+        void onChanged() {
+          setState(() {
+            _selectedBrand = TicketBrand.values.elementAt(index);
+          });
+        }
+
+        return InkWell(
+          onTap: onChanged,
+          child: _brandWidget(
+            theme: theme,
+            title: TicketBrand.values.elementAt(index).name,
+            isSelected: isSelected,
+            onChanged: (value) {
+              log(name: "value", value.toString());
+
+              if (value != null && value) onChanged();
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  ListTile _brandWidget({
+    required ThemeData theme,
+    required String title,
+    required bool isSelected,
+    required Function(bool?) onChanged,
+  }) {
+    return ListTile(
+      title: Row(
+        spacing: 8,
+        children: [
+          Image.asset(AppAssetsPath.logoPNG, width: 28, height: 28),
+          Text(
+            title,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurface,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+      leading: Checkbox(value: isSelected, onChanged: onChanged),
     );
   }
 }
